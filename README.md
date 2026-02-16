@@ -1,9 +1,9 @@
 # Inflationary-Cosmology
 Project on inflationary cosmology for Modern Computational Techniques
 
-Curvature.nb: Mathematica is used to plot manifolds representing the structure of spacetime at different curvatures $k$.
+Curvature.nb: Mathematica is used to plot manifolds representing the structure of spacetime at different curvatures $k$. Results are shown in 'positively1.png', 'flat1.png' and 'negatively3.png'.
 
-Einstein's equations.nb: Friedmann and continuity equations are derived using the diffgeo package. The evolution of the scale factor is then found for each of the three periods of the Universe (radiation dominated, matter dominated and Dark Energy dominated).
+Einstein's equations.nb: Friedmann and continuity equations are derived using the diffgeo package. The evolution of the scale factor is then found for each of the three periods of the Universe (radiation dominated, matter dominated and Dark Energy dominated); result is shown in 'scale factor comparison.png'.
 
 Inflation equations.nb: Friedmann and contiuity equations are found in terms of a homogeneous scalar field (which is assumed to drive inflation). These can be manipulated to express the conditions required for inflation to occur. The slow-roll approximation is introduced to simplify the Friedmann and continuity equations. The slow-roll parameters are defined using the Planck mass and derivatives of the potential $V$ - inflation occurs as long as these parameters are much less than 1.
 
