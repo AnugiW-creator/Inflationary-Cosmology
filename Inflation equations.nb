@@ -1,0 +1,19 @@
+(*Friedmann velocity equation for a scalar field.*)
+(*Substitute \[Rho] and P for homogeneous scalar field.*)
+scalarField = {\[Rho][t]−>(1/2) (\[Phi]’[t])^2+V[\[Phi][t]], P[t]−>(1/2)
+(\[Phi]’[t])^2−V[\[Phi][t]]};
+EinsteinEqs = Einstein == 8 \[Pi] G metric Subscript[T^\[Mu], \[Nu]]/.scalarField//Simplify;
+
+Friedmann1=EinsteinEqs[[1,1,1]]==EinsteinEqs[[2,1,1]]
+
+(*Continuity equation for a scalar field.*)
+covT = contract[covariant[metric Subscript[T^\[Mu], \[Nu]]/.scalarField]]
+continuityEq = covT[[1]]==0
+
+(*Substitute a’[t]/a[t] with H[t]. We must explicitly substitute H^2=(a’[t]/a[t])^2.*)
+conv = {a’[t]/a[t]−>H[t],(a’[t]/a[t])^2−>(H[t])^2};
+
+(*Differentiate Friedmann velocity equation and eliminate V’[\[Phi][t]] using the continuity
+equation.*)
+diffH = D[Friedmann1/.conv,t];
+HDot = Eliminate[{diffH, continuityEq/.conv},V’[\[Phi][t]]]//Simplify
