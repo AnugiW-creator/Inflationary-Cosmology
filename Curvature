@@ -1,0 +1,37 @@
+$PrePrint = TraditionalForm;
+Clear[X, Y, Z]
+
+(*Plot manifolds for k>0, k=0 and k<0.*)
+grr = 1/(1−kr^2);
+(*Transform from spherical coordinates to Cartesian coordinates.*)
+X = r Cos[\[Phi]];
+Y = r Sin[\[Phi]];
+
+eq = D[X,r]^2 + D[Y,r]^2 + D[Z[r],r]^2 == grr//Simplify
+
+(*For positive k*)
+
+(*Set integration constant to 0.*)
+Zr = Z[r]/.DSolve[eq/.k−>1, Z[r], r]/.C[1]−>0
+
+(*Plot manifold for k>0.*)
+Plot3D[Zr/.r−>Sqrt[x^2 + y^2], {x,−1,1}, {y,−1,1},
+BoxRatios−>1, PlotRange−>All, ColorFunction−>"CandyColors",
+PlotStyle−>Directive[Specularity[White, 30]], Axes−>False,
+Boxed−>False]
+
+(*For zero k*)
+Zrflat = Z[r]/.DSolve[eq/.k−>0, Z[r], r]/.C[1]−>0
+
+Plot3D[Zrflat/.r−>Sqrt[x^2+y^2], {x,0,2}, {y,0,2},
+BoxRatios−>1, PlotRange−>All, ColorFunction−>"CandyColors",
+PlotStyle−>Directive[Specularity[White, 30]], Axes−>False,
+Boxed−>False]
+
+(*For negative k*)
+Zrneg = Z[r]/.DSolve[eq/.k−>−1, Z[r], r]/.C[1]−>0
+
+Plot3D[IZrneg/.r−>Sqrt[x^2−y^2], {x,−2,2}, {y,−2,2},
+BoxRatios−>1, PlotRange−>All, ColorFunction−>"CandyColors",
+PlotStyle−>Directive[Specularity[White,30]], Axes−>False,
+Boxed−>False]
