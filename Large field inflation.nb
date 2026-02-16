@@ -1,0 +1,81 @@
+(*Define simple single field potential.*)
+V1[x_] := (1/2) m^2 (x)^2;
+
+(*Set constants such that Subscript[M, pl] and m are 1.*)
+setCons1 = {G−>(1/(8 \[Pi])), m−>1};
+
+(*Plot potential.*)
+p1 = Plot[V1[\[Phi]]/.setCons1,{\[Phi],0,25},PlotStyle−>{RGBColor[0.85,0.27,0.54]},
+PlotRange−>All,AxesLabel−>{\[Phi],"V(\[Phi])"}, LabelStyle−>{FontSize−>16, FontFamily−>"Times",
+Black}, Ticks−>None];
+
+(*Create label to show evolution of scalar field.*)
+p2 = Plot[(V1[\[Phi]]+10)/.setCons1,{\[Phi],6,12},PlotStyle−>{RGBColor[0.32,0.56,0.81]},
+PlotRange−>All, Ticks−>None]/. Line[x_] :> {Arrowheads[{−.05,0}], Arrow[x]};
+
+(*Separate the text so that it shows on two lines.*)
+t1 = Graphics[Text[Style[OverDot[\[Phi],1], 16, FontFamily−>"Times"], {6.8, 105}]];
+t2 = Graphics[Text[Style["rolls towards 0", 16, FontFamily−>"Times"], {6.8, 80}]];
+Show[p1, p2, t1, t2]
+
+(*Set constants such that Mpl and m are 1.*)
+setCons1 = {G−>(1/(8\[Pi])), m−>1};
+
+(*Substitute potential into equations of motion.*)
+subPot = {V[\[Phi][t]]−>V1[\[Phi][t]], V’[\[Phi][t]]−>V1’[\[Phi][t]]};
+eq1 = Friedmann1/.subPot/.setCons1
+eq2 = continuityEq/.subPot/.setCons1
+
+(*Use NDSolve to obtain numerical solutions for the Friedmann and continuity equations, as they are
+differential equations.*)
+slns = NDSolve[{eq1, eq2, \[Phi][0] == 4, \[Phi]’[0] == −0.9, a[0] == 1}, {\[Phi][t], a[t]},{t, 0, 500}]
+
+(*Create new functions \[Phi](t) and a(t), substituting the solutions.*)
+\[Phi]sln[t_] := \[Phi][t]/.slns[[2]]
+asln[t_] := a[t]/.slns[[2]]
+
+(*Plot solutions. Epilog is used to include inset of \[Phi](t) for t = 0 to t = 5 and a(t) for t = 0 to
+t = 6.*)
+Plot[{\[Phi]sln[t]}, {t, 0, 100}, PlotRange−>All, AxesLabel−>{t, "\[Phi](t)"},
+PlotStyle−>{RGBColor[0.85, 0.27, 0.54]}, LabelStyle−>{FontSize−>16, FontFamily−>"Times", Black},
+Epilog−>Inset[Plot[{\[Phi]sln[t]}, {t, 0, 5}, PlotStyle−>{RGBColor[0.85, 0.27, 0.54]},
+ImageSize−>190, Ticks−>None, LabelStyle−>{FontSize−>14, FontFamily−>"Times", Black},
+Frame−>True], {69, 2.7}]]
+LogPlot[asln[t], {t, 0, 100}, PlotRange−>All, PlotStyle−>{RGBColor[0.32, 0.56, 0.81]},
+LabelStyle−>{FontSize−>20, FontFamily−>"Times", Black}, AxesLabel−>{t, "a(t)"},
+Epilog−>Inset[Plot[{asln[t]}, {t, 0, 6}, PlotStyle−>{RGBColor[0.32, 0.56, 0.81]}, ImageSize−>190,
+Ticks−>None, LabelStyle−>{FontSize−>14, FontFamily−>"Times", Black},Frame−>True], {69,2.7}]]
+
+(*Slow−roll conditions break down at \[Epsilon] = 1 and \[Eta] = 1*)
+epsn = Mpl^2/2(V1’[\[Phi][t]]/V1[\[Phi][t]])^2 == 1;
+eta = Mpl^2V1’’[\[Phi][t]]/V1[\[Phi][t]] == 1;       (*Note that this leads to the same equation as epsn.*)
+
+(*Solve \[Phi] for when conditions break down.*)       
+\[Phi]end = \[Phi][t]/.Solve[epsn, \[Phi][t]][[2]]
+
+(*Solve number o fe−folds N before break down for initial \[Phi] = \[Phi]i*)
+Nsol = (1/Mpl^2) Integrate[(V1[\[Phi]]/V1’[\[Phi]]), {\[Phi], \[Phi]end, \[Phi]i}]//Simplify
+
+(*Applying slow−roll conditions to Friedmann and continuity equations.*)
+FEq = (a’[t]/a[t])^2==1/(3 Mpl^2) V1[\[Phi][t]];
+CEq = (3 a’[t] \[Phi]’[t])/a[t]+(V1’[\[Phi][t]])==0;
+
+(*Solve Friedmann and continuity equations to get \[Phi][t] and a[t].*)
+sol1 = DSolve[{FEq, CEq, \[Phi][0]==\[Phi]i, a[0]==ai},{\[Phi][t],a[t]}, t]
+
+(*Set constants. \[Phi]i must be larger than 3 Mpl.*)
+setCons = {Mpl−>1, m−>1, \[Phi]i−>4, ai−>1}
+
+(*Plot \[Phi][t] and a[t].*)
+\[Phi]sol[t_]:=\[Phi][t]/.sol1[[1]]/.setCons
+asol[t_]:=a[t]/.sol1[[1]]/.setCons
+
+Plot[{\[Phi]sol[t]},{t,0,5}, PlotRange−>All, AxesLabel−>{t,"\[Phi](t)"},
+PlotStyle−>{RGBColor[0.85,0.27,0.54]}, LabelStyle−>{FontSize−>20,FontFamily−>"Times", Black}]
+
+Plot[asol[t],{t,0,6}, PlotRange−>All, PlotStyle−>{RGBColor[0.32,0.56,0.81]},
+LabelStyle−>{FontSize−>20,FontFamily−>"Times", Black}, AxesLabel−>{t,"a(t)"}]
+
+(*Calculate time t that inflation ends*)
+\[Phi]1[t_]:=\[Phi][t]/.sol1[[1]]
+inflTime = \[Phi]1[t]==\[Phi]end
